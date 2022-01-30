@@ -118,16 +118,28 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D col)
     {
-        if (ricochet && (col.gameObject.tag == "Ground" || col.gameObject.tag == "Projectile"))
+        if (ricochet) //rubiks cube
         {
-            var lastVelocity = new Vector2(speed, verticalVelocity);
-            //  Debug.Log(lastVelocity);
-            var newSpeed = lastVelocity.magnitude;
-            var direction = Vector2.Reflect(lastVelocity.normalized, col.contacts[0].normal);
-            rb.velocity = direction * Mathf.Max(newSpeed, 0f);
-            
-            speed = rb.velocity.x;
-            verticalVelocity = rb.velocity.y;
+            if (col.gameObject.tag == "Ground" || col.gameObject.tag == "Projectile")
+            {
+                var lastVelocity = new Vector2(speed, verticalVelocity);
+                //  Debug.Log(lastVelocity);
+                var newSpeed = lastVelocity.magnitude;
+                var direction = Vector2.Reflect(lastVelocity.normalized, col.contacts[0].normal);
+                rb.velocity = direction * Mathf.Max(newSpeed, 0f);
+
+                speed = rb.velocity.x;
+                verticalVelocity = rb.velocity.y;
+
+                if (GetComponent<AudioSource>() != null)
+                {
+                    GetComponent<AudioSource>().Play(); //ricochet sound
+                }
+            }
+            else if (col.gameObject.tag == "Player")
+            {
+                Physics2D.IgnoreCollision(col.collider, GetComponent<Collider2D>());
+            }
 
         }
 

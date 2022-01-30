@@ -22,6 +22,7 @@ public class SpaceManager : MonoBehaviour
     public GameObject player;
     public GameObject background;
     public GameObject[] enemies;
+    public GameObject shipsBG;
     void Start()
     {
         gm = GameObject.FindGameObjectWithTag("GM").GetComponent<GameMaster>();
@@ -34,6 +35,7 @@ public class SpaceManager : MonoBehaviour
             {
                 obj.SetActive(true);
             }
+            StartCoroutine(activateShipsBG());
         }
         else
         {
@@ -89,10 +91,13 @@ public class SpaceManager : MonoBehaviour
         StartCoroutine(SoundControl.startFade(shipSound, 2f, 0));
         yield return new WaitForSeconds(3f);
         whiteFade.Play("whiteFadeOut");
+        
         player.SetActive(true);
+        
+
+
         gm.loadPlayer = true;
         ship.gameObject.SetActive(false);
-
         originalCam.SetActive(false);
         targetCam.SetActive(true);
         background.SetActive(true);
@@ -101,14 +106,23 @@ public class SpaceManager : MonoBehaviour
         {
             obj.SetActive(true);
         }
+        StartCoroutine(activateShipsBG());
 
         gm.lastCheckPointPos = player.transform.position;
         gm.ogCam = originalCam.name;
         gm.tgCam = targetCam.name;
 
+        yield return new WaitForSeconds(0.5f);
+        player.GetComponent<PlayerHealth>().health = ship.gameObject.GetComponent<PlayerHealth>().health;
+        player.GetComponent<PlayerHealth>().lockControl(false);
 
 
+    }
 
+    IEnumerator activateShipsBG()
+    {
+        yield return new WaitForSeconds(0.1f); //delay added because originally, ships would move away from initial pos after player respawning
+        shipsBG.SetActive(true);
     }
 
 }

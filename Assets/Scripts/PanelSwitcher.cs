@@ -13,7 +13,8 @@ public class PanelSwitcher : MonoBehaviour
     public GameObject greenSpikes;
     public GameObject blueSpikes;
 
-    private int count = 0;
+    [System.NonSerialized]
+    public int count = 0;
 
     public Image colorwheel;
 
@@ -28,6 +29,11 @@ public class PanelSwitcher : MonoBehaviour
     public GameObject redEnemies;
     public GameObject greenEnemies;
     public GameObject blueEnemies;
+
+    public GameObject redJB;
+    public GameObject greenJB;
+    public GameObject blueJB;
+
     private void Start()
     {
         OG_red = redPanels.GetComponent<PlatformEffector2D>().colliderMask;
@@ -102,6 +108,26 @@ public class PanelSwitcher : MonoBehaviour
 
             redSpikes.layer = 4;
             blueSpikes.layer = 2;
+
+            if (redJB != null)
+            {
+                SpriteRenderer rend = redJB.GetComponent<SpriteRenderer>();
+                rend.color = new Color(rend.color.r, rend.color.g, rend.color.b, 1);
+
+                rend = blueJB.GetComponent<SpriteRenderer>();
+                rend.color = new Color(rend.color.r, rend.color.g, rend.color.b, 0.55f);
+
+                rend = greenJB.GetComponent<SpriteRenderer>();
+                rend.color = new Color(rend.color.r, rend.color.g, rend.color.b, 0.55f);
+
+                redJB.layer = LayerMask.NameToLayer("Enemy");
+                greenJB.layer = LayerMask.NameToLayer("NoPlayerCollision");
+                blueJB.layer = LayerMask.NameToLayer("NoPlayerCollision");
+
+                redJB.GetComponent<AICollision>().enabled = true;
+                greenJB.GetComponent<AICollision>().enabled = false;
+                blueJB.GetComponent<AICollision>().enabled = false;
+            }
         }
         else if(green)
         {
@@ -134,7 +160,25 @@ public class PanelSwitcher : MonoBehaviour
             greenSpikes.layer = 4;
             redSpikes.layer = 2;
 
+            if (greenJB != null)
+            {
+                SpriteRenderer rend = greenJB.GetComponent<SpriteRenderer>();
+                rend.color = new Color(rend.color.r, rend.color.g, rend.color.b, 1);
 
+                rend = redJB.GetComponent<SpriteRenderer>();
+                rend.color = new Color(rend.color.r, rend.color.g, rend.color.b, 0.55f);
+
+                rend = blueJB.GetComponent<SpriteRenderer>();
+                rend.color = new Color(rend.color.r, rend.color.g, rend.color.b, 0.55f);
+
+                redJB.layer = LayerMask.NameToLayer("NoPlayerCollision");
+                greenJB.layer = LayerMask.NameToLayer("Enemy");
+                blueJB.layer = LayerMask.NameToLayer("NoPlayerCollision");
+
+                redJB.GetComponent<AICollision>().enabled = false;
+                greenJB.GetComponent<AICollision>().enabled = true;
+                blueJB.GetComponent<AICollision>().enabled = false;
+            }
 
         }
         else if(blue)
@@ -169,6 +213,26 @@ public class PanelSwitcher : MonoBehaviour
 
             blueSpikes.layer = 4;
             greenSpikes.layer = 2;
+
+            if (blueJB != null)
+            {
+                SpriteRenderer rend = blueJB.GetComponent<SpriteRenderer>();
+                rend.color = new Color(rend.color.r, rend.color.g, rend.color.b, 1);
+
+                rend = redJB.GetComponent<SpriteRenderer>();
+                rend.color = new Color(rend.color.r, rend.color.g, rend.color.b, 0.55f);
+
+                rend = greenJB.GetComponent<SpriteRenderer>();
+                rend.color = new Color(rend.color.r, rend.color.g, rend.color.b, 0.55f);
+
+                redJB.layer = LayerMask.NameToLayer("NoPlayerCollision");
+                greenJB.layer = LayerMask.NameToLayer("NoPlayerCollision");
+                blueJB.layer = LayerMask.NameToLayer("Enemy");
+
+                redJB.GetComponent<AICollision>().enabled = false;
+                greenJB.GetComponent<AICollision>().enabled = false;
+                blueJB.GetComponent<AICollision>().enabled = true;
+            }
         }
         redPanels.GetComponent<TilemapRenderer>().enabled = red;
         greenPanels.GetComponent<TilemapRenderer>().enabled = green;

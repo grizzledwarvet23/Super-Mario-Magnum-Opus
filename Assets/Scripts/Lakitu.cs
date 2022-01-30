@@ -101,9 +101,7 @@ public class Lakitu : MonoBehaviour
         float randomNum = Random.Range(0, 10);
         if (player.GetComponent<PlayerHealth>().health <= 20 && randomNum > 6 && spawnedMushroom == null)
         {
-            spawnedMushroom = Instantiate(mushroom, throwPosition.position, throwPosition.rotation);
-            
-            
+            spawnedMushroom = Instantiate(mushroom, throwPosition.position, throwPosition.rotation); 
         }
         else
         {

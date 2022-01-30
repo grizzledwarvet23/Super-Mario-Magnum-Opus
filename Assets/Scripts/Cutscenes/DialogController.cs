@@ -12,7 +12,7 @@ public class DialogController : MonoBehaviour
 
     public PlayableDirector[] timelines;
 
-    public PlayableDirector outroTimeline; //used in level 4 to transition into fight with JB
+    public PlayableDirector fightIntroTimeline; //used in level 4 to transition into fight with JB
 
     [TextArea(3, 10)]
     public string[] sentences;
@@ -40,6 +40,7 @@ public class DialogController : MonoBehaviour
     public GameObject JB;
     bool JBisSpeaking;
 
+    public Animator blackFade; //used in level4
 
     // Start is called before the first frame update
     void Start()
@@ -102,15 +103,44 @@ public class DialogController : MonoBehaviour
     //used in level 4
     private void fightIntro()
     {
-        outroTimeline.Play();
+        fightIntroTimeline.Play();
         GameObject.FindGameObjectWithTag("GM").GetComponent<GameMaster>().finishedCutscene = true;
         GameObject player = GameObject.Find("player1");
         player.GetComponent<PlayerHealth>().unlockControl();
         gameObject.GetComponent<DialogController>().enabled = false;
     }
 
+    //used in level 4 after fight
+    public IEnumerator outro()
+    {
+        currentTimeline = 0;
+        currentSentence = 0;
+
+        blackFade.Play("whiteFadeIn"); 
+        
+        yield return new WaitForSeconds(1f);
+        JB.GetComponent<Animator>().runtimeAnimatorController = null;
+        JB.GetComponent<SpriteRenderer>().sprite = JBTalkingAnimation[4];
+        JB.GetComponent<SpriteRenderer>().sortingOrder = 1;
+        //indices 4 and 5 have sad JB
+        JBTalkingAnimation[0] = JBTalkingAnimation[4];
+        JBTalkingAnimation[1] = JBTalkingAnimation[5];
+
+        timelines[currentTimeline].Play();
+        enabled = true; //the update function of this class is enabled
+
+        GameObject player = GameObject.Find("player1");
+        player.GetComponent<PlayerHealth>().lockControl(!player.GetComponent<Move2D>().facingRight);
+        player.GetComponent<SpriteRenderer>().color = Color.white;
+        player.GetComponent<Animator>().SetBool("isGrounded", true);
+        player.GetComponent<Animator>().SetBool("isShooting", false);
+        player.transform.position = new Vector2(2063.84f, 326.53f);
+
+        yield return new WaitForSeconds(2f);
+        blackFade.Play("whiteFadeOut");
+    }
+
     public IEnumerator typeSentence() {
-        //   Debug.Log("type");
         int index = 0;
         dialogText.text = "";
         speakerText.text = "";
@@ -184,9 +214,5 @@ public class DialogController : MonoBehaviour
         JBisSpeaking = false;
         doneWithSentence = true;
         currentSentence += 1;
-    
-    
-    
-    
     }
 }

@@ -113,7 +113,7 @@ public class dryBones : MonoBehaviour
             anim.Play("dryBonesExplode");
 
             collision.gameObject.GetComponent<PlayerHealth>().takeDamage(40);
-            Debug.Log(0.8f * Mathf.Sign(collision.gameObject.transform.position.x - transform.position.x));
+
             collision.gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(4f * Mathf.Sign(collision.gameObject.transform.position.x - transform.position.x), 15f), ForceMode2D.Impulse);
 
 

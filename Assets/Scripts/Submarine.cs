@@ -72,7 +72,7 @@ public class Submarine : MonoBehaviour
         {
             music.volume = 0.61f;
             player.GetComponent<PlayerHealth>().unlockControl();
-            
+            player.GetComponent<PlayerHealth>().health = healthScript.health;
         }
     }
 
