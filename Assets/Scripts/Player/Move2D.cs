@@ -237,8 +237,7 @@ public class Move2D : MonoBehaviour
                 }
                 else
                 {
-                    //         if (!locked)
-                    //       {
+               
                     if (!enableSlippery)
                     {
                         
@@ -252,19 +251,7 @@ public class Move2D : MonoBehaviour
                             rb.AddForce(new Vector2(0.9f * moveDirection * Mathf.Abs(sprintSpeed), 0), ForceMode2D.Impulse);
                         }
                     }
-               //     }
-               //     else if(Input.GetKeyUp(KeyCode.A)) 
-         //           {
-                 //       Debug.Log(rb.velocity.x);
-                        
-                  //  }
-                    //          rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * Mathf.Max(4, Mathf.Abs(rb.velocity.x)), rb.velocity.y);
-                    //        Debug.Log(rb.velocity.x);
-                    //      StartCoroutine(slipTest());
-
-                    //     else if(!locked)
-                    //   {
-                    // }
+              
                 }
 
 
@@ -283,7 +270,7 @@ public class Move2D : MonoBehaviour
         {
             isMoving = false;
         }
-        if (rb.velocity.y < -30)
+        if (rb.velocity.y < -20)
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y + 1);
         }
