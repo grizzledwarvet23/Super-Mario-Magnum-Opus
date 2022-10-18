@@ -21,6 +21,7 @@ public class GameMaster : MonoBehaviour
     public bool[] keysToDisable;
     public int keyCount;
 
+    //THE TWO BELOW ARE USED IN LEVEL 2
     [System.NonSerialized]
     public Material currentGroundMat;
 
@@ -52,26 +53,41 @@ public class GameMaster : MonoBehaviour
         else {
             if(instance.levelNumber != levelNumber)
             {
-//                Debug.Log("Hello");
-                instance.hasReloaded = hasReloaded;
-                instance.hasKeys = hasKeys;
-                instance.keysToDisable = keysToDisable;
-                instance.keyCount = keyCount;
-                instance.currentGroundMat = currentGroundMat;
-                instance.lastCheckPointPos = lastCheckPointPos;
-                instance.checkPointReached = checkPointReached;
-              //  Debug.Log(currentMusic);
-                instance.currentMusic = currentMusic;
-                instance.levelNumber = levelNumber;
-                instance.hasSub = hasSub;
-                instance.subSpawnPos = subSpawnPos;
-                instance.ogCam = ogCam;
-                instance.tgCam = tgCam;
-                instance.loadPlayer = loadPlayer;
+                try
+                {
+                    if (levelNumber == 0 && instance.levelNumber >= 1 && instance.levelNumber <= 6) //if we're in the main menu, and came from a level
+                    {
+                        GameObject canvas = GameObject.Find("Canvas");
+                        canvas.transform.GetChild(5).gameObject.SetActive(true); //levels menu
+                        canvas.transform.GetChild(3).gameObject.SetActive(false); //title screen
 
-                instance.nuclearRodsUsed[0] = nuclearRodsUsed[0];
-                instance.nuclearRodsUsed[1] = nuclearRodsUsed[1];
-                instance.finishedCutscene = finishedCutscene;
+                    }
+                }
+
+                finally
+                {
+                    instance.hasReloaded = hasReloaded;
+                    instance.hasKeys = hasKeys;
+                    instance.keysToDisable = keysToDisable;
+                    instance.keyCount = keyCount;
+                    instance.currentGroundMat = currentGroundMat;
+                    instance.lastCheckPointPos = lastCheckPointPos;
+                    instance.checkPointReached = checkPointReached;
+                    //  Debug.Log(currentMusic);
+                    instance.currentMusic = currentMusic;
+                    instance.levelNumber = levelNumber;
+                    instance.hasSub = hasSub;
+                    instance.subSpawnPos = subSpawnPos;
+                    instance.ogCam = ogCam;
+                    instance.tgCam = tgCam;
+                    instance.loadPlayer = loadPlayer;
+
+                    instance.nuclearRodsUsed[0] = nuclearRodsUsed[0];
+                    instance.nuclearRodsUsed[1] = nuclearRodsUsed[1];
+                    instance.finishedCutscene = false;
+                }
+
+                
                 //COPYING VARIABLES WHEN SCENE CHANGES
                 
             }

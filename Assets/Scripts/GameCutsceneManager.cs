@@ -9,6 +9,7 @@ public class GameCutsceneManager : MonoBehaviour
     GameObject screenFadeObject;
     Animator screenFadeAnimator;
 
+    public int levelNumber;
     public GameObject victoryMario;
     Animator victoryMarioAnimator;
 
@@ -61,12 +62,13 @@ public class GameCutsceneManager : MonoBehaviour
     }
 
     void exitLevelScene(string sceneToLoad) {
+        SaveSystem.saveLevel(levelNumber);
         SceneManager.LoadScene(sceneToLoad);
     
     }
 
     void disableHUD() {
-        for (int x = 0; x < HUD_elements.transform.GetChildCount(); x++)
+        for (int x = 0; x < HUD_elements.transform.childCount; x++)
         {
             if(HUD_elements.transform.GetChild(x).name != screenFadeObject.name)
             {
@@ -120,6 +122,7 @@ public class GameCutsceneManager : MonoBehaviour
         yield return new WaitForSeconds(5);
         screenFadeAnimator.Play("blackFadeOut");
         yield return new WaitForSeconds(3);
+        SaveSystem.saveLevel(3);
         exitLevelScene("Menu");
 
 

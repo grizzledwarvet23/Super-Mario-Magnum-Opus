@@ -16,6 +16,11 @@ public class TextCutscene : MonoBehaviour
     public AudioSource music;
 
     public GameObject enterKey;
+
+    public int exitTime = 4;
+
+    public bool finalLevel;
+    public TextMeshProUGUI endingtext;
     void Start()
     {
         index = 0;
@@ -26,11 +31,11 @@ public class TextCutscene : MonoBehaviour
     IEnumerator typeText(float time)
     {
         List<string> words = new List<string> (dialogue[index].Split(' '));
-        
-        
+
+        finishedTyping = false;
         yield return new WaitForSeconds(time);
         textbox.text = "";
-        finishedTyping = false;
+//        finishedTyping = false;
         //yield return new WaitForSeconds(0.2f); //make text empty before moving to next 
         foreach(string str in words)
         {
@@ -56,9 +61,9 @@ public class TextCutscene : MonoBehaviour
             {
                 textbox.text = textbox.text.Replace("Giorgio", "<color=blue>Giorgio</color>");
             }
-            else if(str.Contains("HE"))
+            else if(str.Contains("child"))
             {
-                textbox.text = textbox.text.Replace("HE", "<color=blue>HE</color>");
+                textbox.text = textbox.text.Replace("child", "<color=blue>child</color>");
             }
 
             textbox.text += " ";
@@ -74,7 +79,7 @@ public class TextCutscene : MonoBehaviour
 
     private void Update()
     {
-        if( (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && finishedTyping)
+        if( (Input.anyKeyDown && !Input.GetKeyDown(KeyCode.Escape)) && finishedTyping)
         {
             enterKey.SetActive(false);
             if (index < dialogue.Length)
@@ -86,10 +91,37 @@ public class TextCutscene : MonoBehaviour
                 
                 finishedTyping = false;
                 textbox.text = ""; 
-                StartCoroutine(SoundControl.startFade(music,4f, 0f));
-                Invoke("beginLevel", 4f);
+                StartCoroutine(SoundControl.startFade(music, exitTime, 0f));
+                if (finalLevel)
+                {
+                    StartCoroutine(finalMessage());
+                }
+                else
+                {
+                    Invoke("beginLevel", exitTime);
+                }
             }
         }
+    }
+
+    IEnumerator finalMessage()
+    {
+        endingtext.color = new Color(1, 1, 1, 0);
+        yield return new WaitForSeconds(5f);
+        for (float i = 0; i <= 60; i++)
+        {
+            endingtext.color = new Color(1, 1, 1, i / 60.0f);
+            yield return new WaitForSeconds(0.02f);
+        }
+        yield return new WaitForSeconds(3);
+        for (float i = 60; i >= 0; i--)
+        {
+            endingtext.color = new Color(1, 1, 1, i / 60.0f);
+            yield return new WaitForSeconds(0.02f);
+        }
+        yield return new WaitForSeconds(3);
+        beginLevel();
+        
     }
 
     void beginLevel()

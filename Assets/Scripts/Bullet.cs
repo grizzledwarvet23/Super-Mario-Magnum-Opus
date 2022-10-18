@@ -23,6 +23,7 @@ public class Bullet : MonoBehaviour
     public float verticalVelocity = 0;
 
     public bool ricochet; //level 4
+    public bool bounce;
     
     // Start is called before the first frame update
     void Start()
@@ -95,7 +96,7 @@ public class Bullet : MonoBehaviour
     {
         if (hitInfo.tag == "Ground")
         {
-            if(!ricochet) 
+            if(!ricochet && !bounce) 
             { 
                 instantiateEffect();
                 Destroy(gameObject);
@@ -109,8 +110,9 @@ public class Bullet : MonoBehaviour
                 instantiateEffect();
                 Destroy(gameObject);
             }
-            else if (tagsToDamage.Contains("Breakable") && hitInfo.tag == "Breakable")
+            else if (tagsToDamage.Contains("Breakable") && hitInfo.tag == "Breakable" || (tagsToDamage.Contains("platform") && hitInfo.tag == "platform"))
             {
+                instantiateEffect();
                 Destroy(gameObject);
             }
         }

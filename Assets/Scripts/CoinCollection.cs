@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class CoinCollection : MonoBehaviour
 {
     public int items = 0;
     private GameObject formerCoinName;
-
+    
 
     // Start is called before the first frame update
 
@@ -50,7 +51,6 @@ public class CoinCollection : MonoBehaviour
             gameObject.GetComponent<SoundControl>().CoinPlay();
 
             items++;
-
 
 
         }

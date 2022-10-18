@@ -88,7 +88,6 @@ public class SledgeBossManager : MonoBehaviour
             gaugeNeedle.gameObject.SetActive(false);
             CancelInvoke("gasEffect");
             radiationEffect.color = ogColor;
-            Debug.Log(ogColor);
             foreach (GameObject obj in gas)
             {
                 obj.GetComponent<ParticleSystem>().Stop();

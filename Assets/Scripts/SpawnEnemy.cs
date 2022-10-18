@@ -65,13 +65,34 @@ public class SpawnEnemy : MonoBehaviour
         gameObject.GetComponent<EdgeCollider2D>().enabled = false;
         foreach(enemyParentPair p in pair)
         {
-            GameObject enemy = Instantiate(p.enemy, launchPos.position, launchPos.rotation, p.parent.transform);
-            enemy.GetComponent<Patrol>().enabled = false;
-            
-            enemy.GetComponent<Rigidbody2D>().velocity = launchSpeed;
-            StartCoroutine(enablePatrol(enemy));
+            if (p.enemy.GetComponent<Magikoopa>() != null) //level 4. done so it is consistent with color changes
+            {
+                p.enemy.SetActive(true);
+                if (p.enemy.name.Contains("red"))
+                {
+                    p.enemy.GetComponent<Magikoopa>().setVulnerability(PanelSwitcher.redOn);
+                }
+                else if (p.enemy.name.Contains("green"))
+                {
+                    p.enemy.GetComponent<Magikoopa>().setVulnerability(PanelSwitcher.greenOn);
+                }
+                else if (p.enemy.name.Contains("blue"))
+                {
+                    p.enemy.GetComponent<Magikoopa>().setVulnerability(PanelSwitcher.blueOn);
+                }
+                
+                p.enemy.GetComponent<Magikoopa>().canFlip = false;
+                p.enemy.GetComponent<Rigidbody2D>().velocity = launchSpeed;
+                StartCoroutine(enablePatrol(p.enemy));
+            }
+            else
+            {
+                GameObject enemy = Instantiate(p.enemy, launchPos.position, launchPos.rotation, p.parent.transform);
+                enemy.GetComponent<Patrol>().enabled = false;
 
-
+                enemy.GetComponent<Rigidbody2D>().velocity = launchSpeed;
+                StartCoroutine(enablePatrol(enemy));
+            }
             yield return new WaitForSeconds(1f);
         }
     }
@@ -79,7 +100,17 @@ public class SpawnEnemy : MonoBehaviour
     IEnumerator enablePatrol(GameObject enemy)
     {
         yield return new WaitForSeconds(1f);
-        enemy.GetComponent<Patrol>().enabled = true;
+        if (enemy != null)
+        {
+            if (enemy.GetComponent<Magikoopa>() != null)
+            {
+                enemy.GetComponent<Magikoopa>().canFlip = true;
+            }
+            else
+            {
+                enemy.GetComponent<Patrol>().enabled = true;
+            }
+        }        
     }
 
 

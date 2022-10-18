@@ -23,6 +23,8 @@ public class SpaceManager : MonoBehaviour
     public GameObject background;
     public GameObject[] enemies;
     public GameObject shipsBG;
+
+    public GameObject dialogBox;
     void Start()
     {
         gm = GameObject.FindGameObjectWithTag("GM").GetComponent<GameMaster>();
@@ -112,9 +114,20 @@ public class SpaceManager : MonoBehaviour
         gm.ogCam = originalCam.name;
         gm.tgCam = targetCam.name;
 
-        yield return new WaitForSeconds(0.5f);
+        player.GetComponent<PlayerHealth>().lockControl(false); //start luigi intro cutscene
+
+        yield return new WaitForSeconds(0.1f);
         player.GetComponent<PlayerHealth>().health = ship.gameObject.GetComponent<PlayerHealth>().health;
-        player.GetComponent<PlayerHealth>().lockControl(false);
+
+        /*
+        player.GetComponent<Animator>().SetBool("isGrounded", true);
+        player.GetComponent<Animator>().SetBool("isShooting", false);
+        
+        player.transform.position = new Vector2(231.04f, 27.2f);
+        player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        player.transform.eulerAngles = new Vector3(0, 0, 0);
+        */
+        dialogBox.SetActive(true);
 
 
     }

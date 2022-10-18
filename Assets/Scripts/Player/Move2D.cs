@@ -423,7 +423,12 @@ public class Move2D : MonoBehaviour
             facingRight = !facingRight;
             transform.Rotate(0f, 180f, 0f);
         }
+    }
 
+    public void flipCutscene()
+    {
+        transform.eulerAngles = new Vector3(0, 0, 0);
+        facingRight = true;
     }
     public void fireAnimation()
     {

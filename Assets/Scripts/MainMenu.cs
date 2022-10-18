@@ -23,6 +23,22 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene(scene);
     }
 
+    /*
+    public static IEnumerator PlayGameAsync(string scene)
+    {
+        Time.timeScale = 1.0f;
+        AudioListener.pause = false;
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scene);
+        asyncLoad.allowSceneActivation = true;
+        while (!asyncLoad.isDone)
+        {
+            Debug.Log(asyncLoad.progress);
+            yield return null;
+        }
+        yield return asyncLoad;
+    }
+    */
+
 
     public void QuitGame()
     {

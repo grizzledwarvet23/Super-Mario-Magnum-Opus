@@ -23,6 +23,7 @@ public class Pipe : MonoBehaviour
 
     public AudioSource pipeSound;
 
+    public GameObject playerObject;
     GameObject player;
     public GameObject[] objectsToEnable;
     public GameObject[] objectsToDisable;
@@ -44,7 +45,14 @@ public class Pipe : MonoBehaviour
         gm = GameObject.FindGameObjectWithTag("GM").GetComponent<GameMaster>();
         canWarp = false;
         rotation = transform.parent.gameObject.transform.rotation.eulerAngles.z;
-        player = GameObject.Find("player1");
+        if (playerObject != null)
+        {
+            player = playerObject;
+        }
+        else
+        {
+            player = GameObject.Find("player1");
+        }
 
         if(gm.loadSubmarine && submarine != null)
         {
@@ -89,6 +97,10 @@ public class Pipe : MonoBehaviour
     void pipeActions() {
         blackFade.SetActive(false);
         blackFade.SetActive(true);
+        if (player == null && playerObject != null)
+        {
+            player = playerObject;
+        }
         player.transform.position = new Vector3(warp_x, warp_y, player.transform.position.z);
         if(changeRotation)
         {
@@ -136,7 +148,7 @@ public class Pipe : MonoBehaviour
                 gm.lastCheckPointPos = new Vector2(-218.2f, 54.3f);
                 gm.loadSubmarine = true;
             }
-            else if (player.transform.GetChild(player.transform.GetChildCount() - 1).name == "nuclear rod (1)")
+            else if (player.transform.GetChild(player.transform.childCount - 1).name == "nuclear rod (1)")
             {
                 gm.lastCheckPointPos = new Vector2(-218.2f, 54.3f);
                 gm.loadSubmarine = true;

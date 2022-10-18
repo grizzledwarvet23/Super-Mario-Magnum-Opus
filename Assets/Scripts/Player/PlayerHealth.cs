@@ -16,6 +16,7 @@ public class PlayerHealth : MonoBehaviour
     private SpriteRenderer renderer;
     Color originalColor;
     public bool invulnerable;
+    public bool invincible = false; //USED IN MORTAR 
     public Slider healthbar;
     public Image healthFill;
     public Image healthBackground;
@@ -90,7 +91,7 @@ public class PlayerHealth : MonoBehaviour
     public void takeDamage(float damage)
     {
 //        Debug.Log("damage taken");
-        if (!invulnerable || (invulnerable && damage < 0))
+        if ( !invincible && (!invulnerable || (invulnerable && damage < 0) ) )
         {
 //            Debug.Log(damage);
             Physics2D.IgnoreLayerCollision(12, 9, true);
@@ -259,6 +260,7 @@ public class PlayerHealth : MonoBehaviour
     {
         //I MADE HIM FLIP FOR BOO BOSS. CHANGE THIS LATER SURE
         move2D.flip();
+        transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
         move2D.enabled = false;
         animator.SetFloat("Speed", 0.0f);
         gameObject.GetComponent<Weapon>().enabled = false;
@@ -270,13 +272,21 @@ public class PlayerHealth : MonoBehaviour
     //OVERLOADED VERSION OF ABOVE
     public void lockControl(bool flip)
     {
+        if (move2D == null && gameObject.GetComponent<Move2D>() != null)
+        {
+            move2D = gameObject.GetComponent<Move2D>();
+        }
         //I MADE HIM FLIP FOR BOO BOSS. CHANGE THIS LATER SURE
         if (flip)
         {
             move2D.flip();
         }
+        transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
         move2D.enabled = false;
+
+        if (animator == null) { animator = gameObject.GetComponent<Animator>(); }
         animator.SetFloat("Speed", 0.0f);
+        animator.speed = 1;
         gameObject.GetComponent<Weapon>().enabled = false;
         gameObject.GetComponent<SoundControl>().disabled = true;
 

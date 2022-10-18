@@ -9,6 +9,7 @@ public class DialogActivator : MonoBehaviour
     DialogController dc;
 
     public bool isLevel4;
+    public bool isLevel5;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,7 +23,7 @@ public class DialogActivator : MonoBehaviour
     // Update is called once per frame
     
     void OnEnable() {
-        if(dc == null && isLevel4)
+        if(dc == null && (isLevel4 || isLevel5) )
         {
             dc = DialogBox.GetComponent<DialogController>();
         }

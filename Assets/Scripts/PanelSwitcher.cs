@@ -33,6 +33,11 @@ public class PanelSwitcher : MonoBehaviour
     public GameObject redJB;
     public GameObject greenJB;
     public GameObject blueJB;
+    
+    [System.NonSerialized]
+    public static bool redOn;
+    public static bool greenOn;
+    public static bool blueOn;
 
     private void Start()
     {
@@ -79,6 +84,9 @@ public class PanelSwitcher : MonoBehaviour
     {
         if (red)
         {
+            redOn = true;
+            greenOn = false;
+            blueOn = false;
             redPanels.GetComponent<PlatformEffector2D>().colliderMask = OG_red;
             greenPanels.GetComponent<PlatformEffector2D>().colliderMask = ~excludeCollisionMask;
             bluePanels.GetComponent<PlatformEffector2D>().colliderMask = ~excludeCollisionMask;
@@ -131,6 +139,9 @@ public class PanelSwitcher : MonoBehaviour
         }
         else if(green)
         {
+            greenOn = true;
+            redOn = false;
+            blueOn = false;
             redPanels.GetComponent<PlatformEffector2D>().colliderMask = ~excludeCollisionMask;
             greenPanels.GetComponent<PlatformEffector2D>().colliderMask = OG_green;
             bluePanels.GetComponent<PlatformEffector2D>().colliderMask = ~excludeCollisionMask;
@@ -183,6 +194,9 @@ public class PanelSwitcher : MonoBehaviour
         }
         else if(blue)
         {
+            blueOn = true;
+            redOn = false;
+            greenOn = false;
             redPanels.GetComponent<PlatformEffector2D>().colliderMask = ~excludeCollisionMask;
             greenPanels.GetComponent<PlatformEffector2D>().colliderMask = ~excludeCollisionMask;
             bluePanels.GetComponent<PlatformEffector2D>().colliderMask = OG_blue;

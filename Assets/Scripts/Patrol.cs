@@ -73,7 +73,10 @@ public class Patrol : MonoBehaviour
 
     public Animator animator;
 
+    public bool moveWhileAttack;
     public bool autoAttack;
+    public bool slowAttack;
+    public bool randomizeFirePoint;
     public AudioSource gunSound;
 
     bool isFlipping;
@@ -81,6 +84,8 @@ public class Patrol : MonoBehaviour
     public int bulletDamage;
     //how many bullets the enemy fires
     public int timesToShoot;
+
+    public float customFireRate = 0.3f;
 
   //  public bool wantToLog;
     public bool animatorControlsAttack;
@@ -271,29 +276,29 @@ public class Patrol : MonoBehaviour
 
 
 
-            if (lineOfSight.collider != null)
+            if (lineOfSight.collider != null && lineOfSight.collider.tag == "Player" && canAttack())
             {
-                if (lineOfSight.collider.tag == "Player" && canAttack())
-                {
+             //   if (lineOfSight.collider.tag == "Player" && canAttack())
+              //  {
                   //  Debug.Log("middle");
                     beginAttack();
-                }
+              //  }
             }
-            else if (lineOfSightUp.collider != null)
+            else if (lineOfSightUp.collider != null && lineOfSightUp.collider.tag == "Player" && canAttack())
             {
-                if (lineOfSightUp.collider.tag == "Player" && canAttack())
-                {
+           //     if (lineOfSightUp.collider.tag == "Player" && canAttack())
+            //    {
                   //  Debug.Log("up");
                     beginAttack();
-                }
+             //   }
             }
-            else if (lineOfSightDown.collider != null)
+            else if (lineOfSightDown.collider != null && lineOfSightDown.collider.tag == "Player" && canAttack())
             {
-                if (lineOfSightDown.collider.tag == "Player" && canAttack())
-                {
+                //if (&& lineOfSightDown.collider.tag == "Player" && canAttack())
+                //{
                    // Debug.Log("down");
                     beginAttack();
-                }
+                //}
             }
 
             if (multipleFirepoints)
@@ -339,7 +344,10 @@ public class Patrol : MonoBehaviour
     }
     private IEnumerator attackPlayer()
     {
-        speed = 0;
+        if (!moveWhileAttack)
+        {
+            speed = 0;
+        }
         if (!animatorControlsAttack)
         {
             if (autoAttack == false)
@@ -359,16 +367,33 @@ public class Patrol : MonoBehaviour
             }
             else
             {
+                if (slowAttack)
+                {
+                    yield return new WaitForSeconds(0.5f);
+                }
                 for (int i = 0; i < timesToShoot; i++)
                 {
-                    GameObject firedBullet = Instantiate(bullet, firePoint.position, firePoint.rotation);
+                    Vector3 pos = firePoint.position;
+                    Quaternion rot = firePoint.rotation;
+                    if (randomizeFirePoint)
+                    {
+                        pos.y = Random.Range(firePoint.position.y - 0.3f, firePoint.position.y + 0.3f);
+                        rot.eulerAngles = new Vector3(rot.eulerAngles.x, rot.eulerAngles.y, Random.Range(rot.eulerAngles.z - 3, rot.eulerAngles.z + 4));
+
+                    }
+                    GameObject firedBullet = Instantiate(bullet, pos, rot);
                     firedBullet.GetComponent<Bullet>().Initialize(bulletDamage);
                     gunSound.Play();
-                    yield return new WaitForSeconds(0.3f);
+                    yield return new WaitForSeconds(customFireRate);
                     lastTimeAttacked = Time.timeSinceLevelLoad;
                 }
+                
             }
             animator.SetBool("attackingPlayer", false);
+            if (slowAttack)
+            {
+                yield return new WaitForSeconds(0.5f);
+            }
             speed = originalSpeed;
 
         }
@@ -469,7 +494,7 @@ public class Patrol : MonoBehaviour
             {
                 lastTouchDamageTime = Time.timeSinceLevelLoad;
                 attackDetails[0] = touchDamage;
-                attackDetails[1] = alive.transform.position.x;;
+                attackDetails[1] = alive.transform.position.x;
                 PH.Damage(attackDetails);
                 if(flipOnPlayerTouch)
                 {
@@ -482,7 +507,6 @@ public class Patrol : MonoBehaviour
 
     /**
      * Use if the enemy's attacking script is being run by animator. For instance, Pokey's shotgun script that doesn't use the normal coroutine
-     * 
      */
     public void stopAttacking()
     {

@@ -10,10 +10,10 @@ public class enableWhenVisible : MonoBehaviour
     private void OnBecameInvisible()
     {
   ///      Debug.Log("Invisible");
-        foreach (GameObject obj in objects)
-        {
-            obj.SetActive(false);
-        }
+   //     foreach (GameObject obj in objects)
+     //   {
+       //     obj.SetActive(false);
+       // }
         /*
         foreach (MonoBehaviour c in components)
         {
@@ -25,10 +25,10 @@ public class enableWhenVisible : MonoBehaviour
     private void OnBecameVisible()
     {
   //      Debug.Log("Visible");
-        foreach (GameObject obj in objects)
-        {
-            obj.SetActive(true);
-        }
+   //     foreach (GameObject obj in objects)
+     //   {
+         //   obj.SetActive(true);
+       // }
         /*
         foreach (MonoBehaviour c in components)
         {

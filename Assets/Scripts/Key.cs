@@ -35,7 +35,7 @@ public class Key : MonoBehaviour
         {
             gameObject.GetComponent<SpriteRenderer>().enabled = false;
             gameObject.GetComponent<BoxCollider2D>().enabled = false;
-            Debug.Log(keyGetSound);
+//            Debug.Log(keyGetSound);
                 keyGetSound.Play();
             
             if (animationName != null)

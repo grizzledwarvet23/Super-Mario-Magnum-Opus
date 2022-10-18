@@ -36,6 +36,7 @@ public class AICollision : MonoBehaviour
 
     float lastTimeAttacked;
 
+    public bool noKnockback;
 
     void Start() {
         lastTimeAttacked = 0;
@@ -75,7 +76,15 @@ public class AICollision : MonoBehaviour
                 attackDetails[0] = touchDamage;
                 attackDetails[1] = alive.transform.position.x;
                 // Debug.Log("Damage" + attackDetails[0] + " " + attackDetails[1]);
-                PH.Damage(attackDetails);
+
+                if (noKnockback)
+                {
+                    PH.takeDamage(attackDetails[0]);
+                }
+                else
+                {
+                    PH.Damage(attackDetails);
+                }
 
             }
         }

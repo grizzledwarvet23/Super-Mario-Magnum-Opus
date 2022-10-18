@@ -77,26 +77,20 @@ public class lockedDoor : MonoBehaviour
 
         if(controlsMusic && gm.currentMusic != null && !gm.currentMusic.isPlaying )
         {
-//            Debug.Log("called!");
             gm.currentMusic.Play();
         }
-        /*
-        if(defaultMusic != null && gm.currentMusic != defaultMusic && gm.currentMusic != null)
-        {
-            defaultMusic.Stop();
-        }
-        if(gm.currentMusic != null)
-        {
-            gm.currentMusic.Play(); //FOR DUNGEON. USUALLY DYING ON THAT SECTION IN LEVEL 2 RESULTED IN USING MUSIC OUTISDE OF THE DOOR, WHICH IS BAD
-        }
-        */
+        
 
 
     }
 
     private void Update()
     {
-        if(!GameObject.Find("PlayerUI").GetComponent<PauseMenu>().isPaused && atDoor && (Input.GetKeyDown(KeyCode.O) || Input.GetButtonDown("Fire1")) && gm.keyCount == neededKeys)
+        if(!GameObject.Find("PlayerUI").GetComponent<PauseMenu>().isPaused && 
+            atDoor && 
+            GameObject.Find("player1").GetComponent<Move2D>().isGrounded && 
+            (Input.GetKeyDown(KeyCode.O) || Input.GetButtonDown("Fire1")) && 
+            gm.keyCount == neededKeys)
         {
             player.transform.position = new Vector3(coords.x, coords.y, player.transform.position.z);
             gm.lastCheckPointPos = coords;
@@ -127,8 +121,6 @@ public class lockedDoor : MonoBehaviour
 
                 GameObject.Find("Music").GetComponents<AudioSource>()[musicToPlayComponentNum].enabled = true; //MUSIC IN LEVEL 2 PRESERVES ON LEVEL RELOAD (AKA ITS LIKE GAMEMASTER)
                 gm.currentMusic = GameObject.Find("Music").GetComponents<AudioSource>()[musicToPlayComponentNum];
-                Debug.Log("changed");
-                
             }
             if(musicToStopComponentNum != -1)
             {

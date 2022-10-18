@@ -18,6 +18,7 @@ public class Weapon : MonoBehaviour
     public LayerMask hitLayer;
     public int Ammo;
     public float[] directionInput = new float[2];
+    private bool canChangeAerialDir;
     public bool doneResetting = true;
     public int MagSize;
     public bool recoilFinished;
@@ -28,7 +29,7 @@ public class Weapon : MonoBehaviour
 
     public slipperyMovement slipScript;
 
-
+    private SpriteRenderer renderer;
     public Color outOfAmmoColor;
 
     public AudioSource noDamageSound;
@@ -37,11 +38,16 @@ public class Weapon : MonoBehaviour
 
     public PanelSwitcher switcher; //flips everytime you shoot. used for PanelSwitcher on level 4
 
+    public LineRenderer lineRenderer;
+    public bool lightningOn = false; //lightning effect in level 4
+
     void Start()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
+        renderer = GetComponent<SpriteRenderer>();
         Ammo =  MagSize;
         ogRecoilDuration = recoilDuration;
+        canChangeAerialDir = true;
     }
 
     // Update is called once per frame
@@ -59,20 +65,37 @@ public class Weapon : MonoBehaviour
         if (moveScript.isGrounded)
         {
             Ammo = MagSize;
-            gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+            if (!lightningOn)
+            {
+                renderer.color = Color.white;
+            }
+            else if (renderer.color.r >= 0.7f || renderer.color.Equals(outOfAmmoColor))
+            {
+                renderer.color = new Color(0.7f, 0.7f, 0.7f);
+            }
         }
         
 
 
         //Debug.DrawRay(firePoint.position, firePoint.right);
-        if ( (Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.O) ) && !(animator.GetCurrentAnimatorStateInfo(0).IsName("Aerial_Shoot") || animator.GetCurrentAnimatorStateInfo(0).IsName("Player_Shoot") || animator.GetCurrentAnimatorStateInfo(0).IsName("Upward_Shoot") || animator.GetCurrentAnimatorStateInfo(0).IsName("Downward_Shoot")) && Ammo > 0)
+        if ( (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.O) || Input.GetKeyDown(KeyCode.P)) && !(animator.GetCurrentAnimatorStateInfo(0).IsName("Aerial_Shoot") || animator.GetCurrentAnimatorStateInfo(0).IsName("Player_Shoot") || animator.GetCurrentAnimatorStateInfo(0).IsName("Upward_Shoot") || animator.GetCurrentAnimatorStateInfo(0).IsName("Downward_Shoot")) && Ammo > 0)
         {
 
 
             recoilDirection = -1;
-           // readyForShot = false;
+            // readyForShot = false;
+            canChangeAerialDir = true;
+            
             directionInput[0] = Input.GetAxisRaw("Horizontal");
             directionInput[1] = Input.GetAxisRaw("Vertical");
+
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                directionInput[0] = 0;
+                directionInput[1] = -1;
+            }
+            
+
             moveScript.fireAnimation();
             moveScript.isJumping = false;
             if (!moveScript.isGrounded)
@@ -117,10 +140,13 @@ public class Weapon : MonoBehaviour
         }
         if(animator.GetCurrentAnimatorStateInfo(0).IsName("Aerial_Shoot"))
         {
-            if(Input.GetAxisRaw("Vertical") != 0)
+            if(Input.GetAxisRaw("Vertical") != 0 && canChangeAerialDir)
             {
-                directionInput[1] = Input.GetAxisRaw("Vertical");
-                transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, directionInput[1] *  90);
+                if (directionInput[1] == 0)
+                {
+                    directionInput[1] = Input.GetAxisRaw("Vertical");
+                    transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, directionInput[1] * 90);
+                }
                 
             }
             
@@ -152,7 +178,6 @@ public class Weapon : MonoBehaviour
 
 
 
-
             if (hitInfo)
             {
                 
@@ -160,10 +185,9 @@ public class Weapon : MonoBehaviour
                 AIDamage enemy = hitInfo.transform.GetComponent<AIDamage>();
                 if (enemy != null && enemy.isActiveAndEnabled)
                 {
-                    //Debug.Log(Mathf.Abs((int)transform.rotation.y - (int)hitInfo.transform.rotation.y));
 
 
-                    if ((hitInfo.transform.parent.name.Contains("Koopas")))
+                    if ((hitInfo.transform.parent != null && hitInfo.transform.parent.name.Contains("Koopas")))
                     {
                         if (!(Mathf.Abs((int)transform.eulerAngles.y - (int)hitInfo.transform.eulerAngles.y) == 180))
                         {
@@ -188,7 +212,7 @@ public class Weapon : MonoBehaviour
                 }
                 else
                 {
-                //    Debug.Log(hitInfo.collider.tag);
+                    //    Debug.Log(hitInfo.collider.tag);
                     switch (hitInfo.collider.tag)
                     {
                         case "Enemy":
@@ -210,22 +234,18 @@ public class Weapon : MonoBehaviour
                         case "Explosive":
                             hitInfo.collider.gameObject.GetComponent<Explosion>().InitiateExplosion();
                             break;
-
-
-
-
-
                     }
-
-
-
-
-
                 }
-                
-                
+
             }
-            
+
+            if (lineRenderer != null)
+            {
+                StartCoroutine(renderLine(hitInfo));
+            }
+
+
+
 
 
             if (!moveScript.facingRight)
@@ -286,7 +306,10 @@ public class Weapon : MonoBehaviour
                 }
                 Ammo -= 1;
                 if (Ammo == 0) {
-                    gameObject.GetComponent<SpriteRenderer>().color = outOfAmmoColor;
+                //    if (!lightningOn)
+                //    {
+                        gameObject.GetComponent<SpriteRenderer>().color = outOfAmmoColor;
+                //    }
                 }
             }
 
@@ -301,8 +324,27 @@ public class Weapon : MonoBehaviour
         }
 
         
-       
+    }
 
+    private IEnumerator renderLine(RaycastHit2D hitInfo)
+    {
+        lineRenderer.SetPosition(0, new Vector2(firePoint.position.x, firePoint.position.y - 0.1f)); 
+        if (hitInfo.collider != null)
+        {
+            lineRenderer.SetPosition(1, new Vector2(hitInfo.point.x, hitInfo.point.y - 0.1f));
+        }
+        else
+        {
+            Vector2 vect = firePoint.position + (range * firePoint.right);
+            lineRenderer.SetPosition(1, vect);
+        }
+
+        
+        lineRenderer.enabled = true;
+
+        yield return new WaitForSeconds(0.02f);
+        lineRenderer.enabled = false;
+        
         
     }
 

@@ -9,7 +9,7 @@ public class BooSniper : MonoBehaviour, BossInterface
     public Vector3[] locations;
 
     private int lastChoice;
-
+    private GameObject player;
     SpriteRenderer renderer;
     Animator animator;
     public Animator sniperAnimator;
@@ -23,7 +23,8 @@ public class BooSniper : MonoBehaviour, BossInterface
 
     public AudioSource laughSound;
 
-    private int count = 0;
+    private int countAttack = 0;
+    private int countReveal = 0;
 
 
     [System.Serializable]
@@ -70,6 +71,7 @@ public class BooSniper : MonoBehaviour, BossInterface
         renderer = gameObject.GetComponent<SpriteRenderer>();
         animator = gameObject.GetComponent<Animator>();
         music = GameObject.Find("Music");
+        player = GameObject.Find("player1");
     }
 
     //BossInterface method
@@ -170,14 +172,16 @@ public class BooSniper : MonoBehaviour, BossInterface
 
         //range is (inclusive, exclusive)
         int chanceShoot = Random.Range(0, 100);
-        if (chanceShoot >= 33 && count < 4)//count ensures that it doesnt go too long without a vulnerability phase
+        if ( (chanceShoot >= 28 && countAttack < 4) || countReveal > 2 )//count ensures that it doesnt go too long without a vulnerability phase
         {
-            count++;
+            countReveal = 0;
+            countAttack++;
             sniperAnimator.Play("SniperShot");
         }
         else
         {
-            count = 0;
+            countAttack = 0;
+            countReveal++;
             gameObject.GetComponent<Animator>().Play("boo_taunt");
             sniperAnimator.Play("sniper_fadeout");
         }
@@ -210,11 +214,12 @@ public class BooSniper : MonoBehaviour, BossInterface
      */
     public void lockPlayer()
     {
-        GameObject.Find("player1").GetComponent<PlayerHealth>().lockControl();
+        player.GetComponent<Animator>().SetBool("isGrounded", true);
+        player.GetComponent<PlayerHealth>().lockControl();
     }
     public void unlockPlayer()
     {
-        GameObject.Find("player1").GetComponent<PlayerHealth>().unlockControl();
+        player.GetComponent<PlayerHealth>().unlockControl();
     }
 
 

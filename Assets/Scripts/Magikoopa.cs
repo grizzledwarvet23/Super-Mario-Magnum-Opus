@@ -8,6 +8,7 @@ public class Magikoopa : MonoBehaviour
     public LayerMask detectMask;
     public GameObject missile;
     private Animator anim;
+    public AudioSource fireSound;
 
     public float attackCooldown;
 
@@ -23,10 +24,13 @@ public class Magikoopa : MonoBehaviour
 
     public GameObject Weakspot;
 
+    [System.NonSerialized]
+    public bool canFlip = true;
     bool movingRight = false;
 
     private void Start()
     {
+        movingRight = transform.eulerAngles.y != 180;
         anim = GetComponent<Animator>();
     }
 
@@ -55,7 +59,7 @@ public class Magikoopa : MonoBehaviour
         }
 
 
-        Collider2D col = Physics2D.OverlapCircle(transform.position, 15, detectMask);
+        Collider2D col = Physics2D.OverlapCircle(transform.position, 12, detectMask);
         if (col != null && col.tag == "Player" && canAttack)
         {
             GameObject player = col.gameObject;
@@ -71,16 +75,19 @@ public class Magikoopa : MonoBehaviour
 
     void flip()
     {
-        if(!movingRight)
+        if (canFlip)
         {
-            transform.eulerAngles = new Vector3(0, 180f, 0);
+            if (!movingRight)
+            {
+                transform.eulerAngles = new Vector3(0, 180f, 0);
+            }
+            else
+            {
+                transform.eulerAngles = Vector3.zero;
+            }
+
+            movingRight = !movingRight;
         }
-        else
-        {
-            transform.eulerAngles = Vector3.zero;
-        }
-        
-        movingRight = !movingRight;
     }
 
     void stopAttacking()
@@ -119,7 +126,9 @@ public class Magikoopa : MonoBehaviour
     }
     private IEnumerator fire(GameObject player)
     {
-        yield return new WaitForSeconds(1.1f); //match time with animation
+        yield return new WaitForSeconds(0.65f); //match time with animation: 1.1
+        fireSound.Play();
+        yield return new WaitForSeconds(0.10f);
         Vector3 direction = transform.right;
         Vector3 pos = player.transform.position - firePoint.position;
         
@@ -132,7 +141,9 @@ public class Magikoopa : MonoBehaviour
         firePoint.rotation = Quaternion.Euler(0, 0, angle);
         GameObject projectile = Instantiate(missile, firePoint.position, firePoint.rotation);
         
-       StartCoroutine(followForDuration(projectile, player, 8, direction));
+        
+        
+       StartCoroutine(followForDuration(projectile, player, 14, direction));
     }
 
     private IEnumerator followForDuration(GameObject projectile, GameObject player, float duration, Vector3 direction)
@@ -142,8 +153,8 @@ public class Magikoopa : MonoBehaviour
      
             if (projectile != null && !player.GetComponent<PlayerHealth>().isDying)
             {
-                Vector3 pos = player.transform.position - projectile.transform.position;
-                float angle = Vector3.Angle(pos, new Vector3(1,0,0));
+                Vector2 pos = player.transform.position - projectile.transform.position;
+                float angle = Vector2.Angle(pos, new Vector2(1,0));
                 if (player.transform.position.y < projectile.transform.position.y)
                 {
                     angle = 360 - angle;
@@ -160,6 +171,6 @@ public class Magikoopa : MonoBehaviour
     }
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireSphere(transform.position, 15);
+        Gizmos.DrawWireSphere(transform.position, 12);
     }
 }

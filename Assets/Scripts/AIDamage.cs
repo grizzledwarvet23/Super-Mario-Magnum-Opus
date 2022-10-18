@@ -13,6 +13,7 @@ public class AIDamage : MonoBehaviour
     private int maxHealth;
     public GameObject obj; //THE ONE TO DESTROY. AKA THE ENEMY
 
+    public bool nonPrefabDeathEffect;
     public GameObject deathEffect;
     public GameObject deathEffect2;
 
@@ -20,6 +21,7 @@ public class AIDamage : MonoBehaviour
 
     public AudioSource deathSound;
     public AudioSource soundToStop;
+    public string soundToStopIndex;
     public GameObject victoryMario;
 
     public GameObject oldCamera;  //ONLY USE THESE VARIABLES IN CONJUCTION WITH GameCutsceneManager
@@ -55,14 +57,23 @@ public class AIDamage : MonoBehaviour
         matWhite = Resources.Load("WhiteFlash", typeof(Material)) as Material;
         matDefault = renderer.material;
 
+        if (soundToStop == null && soundToStopIndex != null && soundToStopIndex.Length > 0)
+        {
+            try
+            {
+                soundToStop = GameObject.Find("Music").GetComponents<AudioSource>()[int.Parse(soundToStopIndex)];
+            }
+            catch { Debug.Log("Sound to stop assignment has failed");  }
+        }
+
     }
     public void TakeDamage(int damage)
-    {
-        
+    {   
         health -= damage;
         if (healthbar != null)
         {
-            healthbar.value -= (damage * (100) / maxHealth);
+            healthbar.value = ( (health * 100) / maxHealth);
+         //   healthbar.value -= (damage * (100) / maxHealth);
         }
         StartCoroutine(WhiteFlash(flashSpeed));
         renderer.material = matWhite;
@@ -71,7 +82,6 @@ public class AIDamage : MonoBehaviour
         {
             gameObject.GetComponent<BossInterface>().onDamageTaken();
         }
-
 
         if (health <= 0)
         {
@@ -92,14 +102,28 @@ public class AIDamage : MonoBehaviour
         {
 
             GameObject effect; // = Instantiate(deathEffect, transform.position, Quaternion.identity);
+            Vector3 pos;
             if (deathEffectPos != null)
             {
-                effect = Instantiate(deathEffect, deathEffectPos.position, Quaternion.identity);
+                pos = deathEffectPos.position;
             }
             else
             {
-                effect = Instantiate(deathEffect, transform.position, Quaternion.identity);
+                pos = transform.position;
             }
+
+            if (!nonPrefabDeathEffect)
+            {
+                effect = Instantiate(deathEffect, pos, Quaternion.identity);
+            }
+            else
+            {
+                effect = deathEffect;
+                effect.transform.position = pos;
+                effect.SetActive(true);
+            }
+            
+            
             //if a boss
             if (effect.GetComponent<GameCutsceneManager>() != null && victoryMario != null) {
                 effect.GetComponent<GameCutsceneManager>().victoryMario = victoryMario;
@@ -116,7 +140,8 @@ public class AIDamage : MonoBehaviour
             if (deathSound != null) {
                 deathSound.Play();
             }
-            if (soundToStop != null) {
+            if (soundToStop != null)
+            {
                 soundToStop.Stop();
             }
 

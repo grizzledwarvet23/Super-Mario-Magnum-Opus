@@ -22,6 +22,7 @@ public class dryBones : MonoBehaviour
     [SerializeField]
     private Vector2 colliderSize;
 
+    public double range = 8;
     private bool canExplode;
     
 
@@ -55,7 +56,7 @@ public class dryBones : MonoBehaviour
             chase();
         }
         
-        else if( Mathf.Abs(vcam.transform.position.x - transform.position.x) <= 8 && Mathf.Abs(vcam.transform.position.y - transform.position.y) <= 8)
+        else if( Mathf.Abs(vcam.transform.position.x - transform.position.x) <= range && Mathf.Abs(vcam.transform.position.y - transform.position.y) <= range)
         {
             //TRIGGER BONES TO RISE
             cd.offset = colliderOffset;

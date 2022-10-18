@@ -19,9 +19,15 @@ public class teleport : MonoBehaviour
     public GameObject originalCam;
     public GameObject dialogBox;
 
+    public GameObject blackFade; //ONLY ASSIGN IF FADE IS DESIRED
+
     public GameObject[] toDisable;
     public GameObject[] toEnable;
 
+    public bool lockPlayer = true; //lock player when teleported
+
+    public bool stopMusic;
+    public AudioSource music;
 
 
     private void OnTriggerEnter2D(Collider2D col)
@@ -32,21 +38,45 @@ public class teleport : MonoBehaviour
             GameMaster gm = GameObject.FindGameObjectWithTag("GM").GetComponent<GameMaster>();
             gm.lastCheckPointPos = respawnPos;
             gm.checkPointReached = true;
+
+            gm.ogCam = originalCam.name;
+            gm.tgCam = targetCam.name;
+
+            /*
             gm.ogCam = "CinemachineBrain (LiftReal)";
             gm.tgCam = "CinemachineBrain (Boss)";
-
+            */
             col.GetComponent<Animator>().SetBool("isGrounded", true);
             col.GetComponent<Animator>().SetBool("isShooting", false);
-            col.GetComponent<PlayerHealth>().lockControl(!col.GetComponent<Move2D>().facingRight);
-            col.transform.eulerAngles = new Vector3(0, 0, 0);
+            col.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+            if (lockPlayer)
+            {
+                col.GetComponent<PlayerHealth>().lockControl(!col.GetComponent<Move2D>().facingRight);
+                col.transform.eulerAngles = new Vector3(0, 0, 0);
+            }
             GameMaster.enableAndDisable(targetCam, originalCam);
-            dialogBox.SetActive(true);
+            //Debug.Log("ey");
+            if (dialogBox != null)
+            {
+                dialogBox.SetActive(true);
+            }
+
+            if (blackFade != null)
+            {
+                blackFade.SetActive(false);
+                blackFade.SetActive(true);
+            }
+
+            if (stopMusic && music != null)
+            {
+                music.Stop();
+            }
             StartCoroutine(loadObjects());
             
         }
     }
 
-    private IEnumerator loadObjects()
+    public IEnumerator loadObjects()
     {
         foreach (GameObject obj in toDisable)
         {

@@ -7,9 +7,9 @@ public class JBBoss : MonoBehaviour, BossInterface
 {
 
     public GameObject projectile;
-    public Transform projectileParent;
+    //public Transform projectileParent;
     public GameObject mushroom;
-    private GameObject spawnedShroom;
+    private bool hasThrownMushroom;
     private bool canAttack;
     public float attackCooldown; // random default value
 
@@ -57,6 +57,7 @@ public class JBBoss : MonoBehaviour, BossInterface
     // Start is called before the first frame update
     void Start()
     {
+        hasThrownMushroom = false;
         anim.runtimeAnimatorController = newController;
         canAttack = false;
         player = GameObject.Find("player1");
@@ -100,13 +101,25 @@ public class JBBoss : MonoBehaviour, BossInterface
                 obj.SetActive(false); //get rid of UI elements
             }
             //gets rid of any rubiks cubes in there
-            Destroy(projectileParent.gameObject);
+          //  Destroy(projectileParent.gameObject);
+
+            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Projectile"))
+            {
+                if (obj.name.Contains("RubiksCube"))
+                {
+                    Destroy(obj);
+                }
+
+            }
+
+            GetComponent<Animator>().runtimeAnimatorController = null;
+            GetComponent<AICollision>().enabled = false;
 
             dialogControl.timelines = outroTimelines;
             dialogControl.sentences = sentences;
             dialogControl.speakers = speakers;
 
-            StartCoroutine(dialogControl.outro());
+            StartCoroutine(dialogControl.outro(4, null));
 
         }
         else if (!moving && !teleporting)
@@ -279,10 +292,10 @@ public class JBBoss : MonoBehaviour, BossInterface
 
     public void throwCube() //called in animation 
     {
-        float randomNum = Random.Range(0, 10);
-        if (player.GetComponent<PlayerHealth>().health <= 20 && randomNum > 7 && spawnedShroom == null) //shroom if low on health
+        if (GetComponent<AIDamage>().health <= 600 && !hasThrownMushroom) //throws shroom halfway thru health
         {
-            spawnedShroom = Instantiate(mushroom, firepoint.position, firepoint.rotation);
+            Instantiate(mushroom, firepoint.position, firepoint.rotation);
+            hasThrownMushroom = true;
         }
         else
         {
@@ -294,8 +307,11 @@ public class JBBoss : MonoBehaviour, BossInterface
             cube.GetComponent<Bullet>().verticalVelocity = cubeSpeed * Mathf.Sin(Mathf.Deg2Rad * angle);
 
 
-            Instantiate(cube, firepoint.position, firepoint.rotation).transform.SetParent(projectileParent);
-            throwSound.Play();
+            if (GetComponent<AIDamage>().health > 0)
+            {
+                Instantiate(cube, firepoint.position, firepoint.rotation); //.transform.SetParent(projectileParent);
+                throwSound.Play();
+            }
         }
     }
 
@@ -310,7 +326,7 @@ public class JBBoss : MonoBehaviour, BossInterface
 
         if (JB.transform.parent.gameObject.activeSelf)
         {
-            Instantiate(cube, JB.transform.position, JB.transform.rotation).transform.SetParent(projectileParent);
+            Instantiate(cube, JB.transform.position, JB.transform.rotation); //.transform.SetParent(projectileParent);
             JB.GetComponents<AudioSource>()[1].Play(); // throw sound
         }
     }
